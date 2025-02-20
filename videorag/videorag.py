@@ -64,7 +64,7 @@ class VideoRAG:
     
     # video
     threads_for_split: int = 10
-    video_segment_length: int = 30 # seconds
+    video_segment_length: int = int(config("VIDEO_SEGMENT_LENGTH")) # seconds
     rough_num_frames_per_segment: int = 5 # frames
     fine_num_frames_per_segment: int = 15 # frames
     video_output_format: str = "mp4"
