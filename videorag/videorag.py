@@ -15,7 +15,7 @@ import tiktoken
 from ._llm import (
     gpt_4o_complete,
     gpt_4o_mini_complete,
-    openai_embedding,oci_embedding,ollama_embedding,
+    openai_embedding,oci_embedding,ollama_embedding,zzz_embedding,
     azure_gpt_4o_complete,
     azure_openai_embedding,
     azure_gpt_4o_mini_complete,
@@ -99,7 +99,7 @@ class VideoRAG:
     entity_summary_to_max_tokens: int = 500
 
     # text embedding
-    embedding_func: EmbeddingFunc = field(default_factory=lambda: ollama_embedding)
+    embedding_func: EmbeddingFunc = field(default_factory=lambda: zzz_embedding)
     embedding_batch_num: int = 32
     embedding_func_max_async: int = 16
     query_better_than_threshold: float = 0.2

@@ -128,6 +128,19 @@ async def openai_embedding(texts: list[str]) -> np.ndarray:
     )
     return np.array([dp.embedding for dp in response.data])
 
+@wrap_embedding_func_with_attrs(embedding_dim=1536, max_token_size=8192)
+@retry(
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
+)
+async def zzz_embedding(texts: list[str]) -> np.ndarray:
+    openai_async_client = get_openai_async_client_instance(llm_type='zzz')
+    response = await openai_async_client.embeddings.create(
+        model="text-embedding-3-small", input=texts, encoding_format="float"
+    )
+    return np.array([dp.embedding for dp in response.data])
+
 @wrap_embedding_func_with_attrs(embedding_dim=1024, max_token_size=512)
 @retry(
     stop=stop_after_attempt(5),

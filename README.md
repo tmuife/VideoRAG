@@ -54,6 +54,7 @@ pip install ctranslate2==4.4.0 faster_whisper==1.0.3 neo4j hnswlib xxhash nano-v
 pip install transformers==4.37.1
 pip install tiktoken openai tenacity
 pip install ollama python-decouple
+pip install soundfile  #if use MiniCPM-o-2_6
 
 # Install ImageBind using the provided code in this repository, where we have removed the requirements.txt to avoid environment conflicts.
 cd ImageBind
