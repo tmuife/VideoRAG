@@ -17,10 +17,10 @@ def encode_video(video, frame_times):
     
 def segment_caption(video_name, video_path, segment_index2name, transcripts, segment_times_info, caption_result, error_queue):
     try:
-        model = AutoModel.from_pretrained(config("CMP_DIR"), trust_remote_code=True)
+        model = AutoModel.from_pretrained(config("CMP_DIR"), trust_remote_code=True,attn_implementation='sdpa',torch_dtype=torch.bfloat16,init_vision=True,init_audio=True,init_tts=True)
         tokenizer = AutoTokenizer.from_pretrained(config("CMP_DIR"), trust_remote_code=True)
-        model.eval()
-        
+        model.eval().cuda()
+        model.init_tts()
         with VideoFileClip(video_path) as video:
             for index in tqdm(segment_index2name, desc=f"Captioning Video {video_name}"):
                 frame_times = segment_times_info[index]["frame_times"]
