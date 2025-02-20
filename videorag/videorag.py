@@ -54,7 +54,7 @@ from ._videoutil import(
     merge_segment_information,
     saving_video_segments,
 )
-
+from decouple import config
 
 @dataclass
 class VideoRAG:
@@ -132,8 +132,8 @@ class VideoRAG:
     def load_caption_model(self, debug=False):
         # caption model
         if not debug:
-            self.caption_model = AutoModel.from_pretrained('./MiniCPM-V-2_6-int4', trust_remote_code=True)
-            self.caption_tokenizer = AutoTokenizer.from_pretrained('./MiniCPM-V-2_6-int4', trust_remote_code=True)
+            self.caption_model = AutoModel.from_pretrained(config("CMP_DIR"), trust_remote_code=True)
+            self.caption_tokenizer = AutoTokenizer.from_pretrained(config("CMP_DIR"), trust_remote_code=True)
             self.caption_model.eval()
         else:
             self.caption_model = None
