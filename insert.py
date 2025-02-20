@@ -9,10 +9,10 @@ warnings.filterwarnings("ignore")
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # Please enter your openai key
-os.environ["OPENAI_API_KEY"] = config("OCI_LLM_API_KEY")
-os.environ["OPENAI_BASE_URL"] = config("OCI_LLM_API_URL")
-llm_model = config("OCI_LLM_MODEL")
-embedding_model = config("OCI_EMBEDDING_MODEL")
+#os.environ["OPENAI_API_KEY"] = config("OCI_LLM_API_KEY")
+#os.environ["OPENAI_BASE_URL"] = config("OCI_LLM_API_URL")
+#llm_model = config("OCI_LLM_MODEL")
+#embedding_model = config("OCI_EMBEDDING_MODEL")
 
 from videorag._llm import *
 from videorag import VideoRAG, QueryParam

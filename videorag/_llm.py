@@ -18,17 +18,11 @@ global_openai_async_client = None
 global_azure_openai_async_client = None
 
 
-def get_openai_async_client_instance(llm_type='default'):
-    global global_openai_async_client
-    if "default" == llm_type:
-        if global_openai_async_client is None:
-            global_openai_async_client = AsyncOpenAI(api_key=config("OCI_LLM_API_KEY"),base_url=config("OCI_LLM_API_URL"))
-        return global_openai_async_client
-    else:
-        if global_openai_async_client is None:
-            global_openai_async_client = AsyncOpenAI(api_key=config("API_KEY"),
-                                                     base_url=config("BASE_URL"))
-        return global_openai_async_client
+def get_openai_async_client_instance():
+    global global_azure_openai_async_client
+    if global_azure_openai_async_client is None:
+        global_azure_openai_async_client = AsyncOpenAI(api_key=config("API_KEY"),base_url=config("BASE_URL"))
+    return global_azure_openai_async_client
 
 
 def get_azure_openai_async_client_instance():
@@ -44,9 +38,9 @@ def get_azure_openai_async_client_instance():
     retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
 )
 async def openai_complete_if_cache(
-    model, prompt, system_prompt=None, history_messages=[],llm_type='default', **kwargs
+    model, prompt, system_prompt=None, history_messages=[], **kwargs
 ) -> str:
-    openai_async_client = get_openai_async_client_instance(llm_type=llm_type)
+    openai_async_client = get_openai_async_client_instance()
     hashing_kv: BaseKVStorage = kwargs.pop("hashing_kv", None)
     messages = []
     if system_prompt:
@@ -82,16 +76,16 @@ async def gpt_4o_complete(
         **kwargs,
     )
 
-async def zhizengzeng_complete(
-    prompt, system_prompt=None, history_messages=[], **kwargs
-) -> str:
-    return await openai_complete_if_cache(
-        "gpt-4o-mini",
-        prompt,
-        system_prompt=system_prompt,
-        history_messages=history_messages,llm_type="zzz",
-        **kwargs,
-    )
+#async def zhizengzeng_complete(
+#    prompt, system_prompt=None, history_messages=[], **kwargs
+#) -> str:
+#    return await openai_complete_if_cache(
+#        "gpt-4o-mini",
+#        prompt,
+#        system_prompt=system_prompt,
+#        history_messages=history_messages,llm_type="zzz",
+#        **kwargs,
+#    )
 
 async def gpt_4o_mini_complete(
     prompt, system_prompt=None, history_messages=[], **kwargs
@@ -104,11 +98,11 @@ async def gpt_4o_mini_complete(
         **kwargs,
     )
 
-async def oci_cohere_complete(
+async def oci_complete(
     prompt, system_prompt=None, history_messages=[], **kwargs
 ) -> str:
     return await openai_complete_if_cache(
-        config("OCI_LLM_MODEL"),
+        "meta.llama-3.1-405b-instruct",
         prompt,
         system_prompt=system_prompt,
         history_messages=history_messages,
@@ -128,36 +122,34 @@ async def openai_embedding(texts: list[str]) -> np.ndarray:
     )
     return np.array([dp.embedding for dp in response.data])
 
-@wrap_embedding_func_with_attrs(embedding_dim=1536, max_token_size=8192)
-@retry(
-    stop=stop_after_attempt(5),
-    wait=wait_exponential(multiplier=1, min=4, max=10),
-    retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
-)
-async def zzz_embedding(texts: list[str]) -> np.ndarray:
-    openai_async_client = get_openai_async_client_instance(llm_type='zzz')
-    response = await openai_async_client.embeddings.create(
-        model="text-embedding-3-small", input=texts, encoding_format="float"
-    )
-    return np.array([dp.embedding for dp in response.data])
+#@wrap_embedding_func_with_attrs(embedding_dim=1536, max_token_size=8192)
+#@retry(
+#    stop=stop_after_attempt(5),
+#    wait=wait_exponential(multiplier=1, min=4, max=10),
+#    retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
+#)
+#async def zzz_embedding(texts: list[str]) -> np.ndarray:
+#    openai_async_client = get_openai_async_client_instance(llm_type='zzz')
+#    response = await openai_async_client.embeddings.create(
+#        model="text-embedding-3-small", input=texts, encoding_format="float"
+#    )
+#    return np.array([dp.embedding for dp in response.data])
 
-@wrap_embedding_func_with_attrs(embedding_dim=1024, max_token_size=512)
-@retry(
-    stop=stop_after_attempt(5),
-    wait=wait_exponential(multiplier=1, min=4, max=10),
-    retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
-)
-async def oci_embedding(texts: list[str]) -> np.ndarray:
-    openai_async_client = get_openai_async_client_instance()
-    response = await openai_async_client.embeddings.create(
-        model=config("OCI_EMBEDDING_MODEL"), input=texts, encoding_format="float"
-    )
-    return np.array([dp.embedding for dp in response.data])
+#useless too short max_token_size
+#@wrap_embedding_func_with_attrs(embedding_dim=1024, max_token_size=512)
+#@retry(
+#    stop=stop_after_attempt(5),
+#    wait=wait_exponential(multiplier=1, min=4, max=10),
+#    retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
+#)
+#async def oci_embedding(texts: list[str]) -> np.ndarray:
+#    openai_async_client = get_openai_async_client_instance()
+#    response = await openai_async_client.embeddings.create(
+#        model=config("OCI_EMBEDDING_MODEL"), input=texts, encoding_format="float"
+#    )
+#    return np.array([dp.embedding for dp in response.data])
 
 
-#func = lambda texts: ollama_embedding(
-#    texts, embed_model="nomic-embed-text", host="http://localhost:11434"
-#),
 @wrap_embedding_func_with_attrs(embedding_dim=1024, max_token_size=8192)
 @retry(
     stop=stop_after_attempt(5),

@@ -26,19 +26,19 @@ def segment_caption(video_name, video_path, segment_index2name, transcripts, seg
                 frame_times = segment_times_info[index]["frame_times"]
                 video_frames = encode_video(video, frame_times)
                 segment_transcript = transcripts[index]
-                query = f"The transcript of the current video:\n{segment_transcript}.\nNow provide a description (caption) of the video in English."
-                #query = f"""
-                #                The transcript of the current video:\n{segment_transcript}.\n
-                #                Please analyze the video and provide a detailed description in English, focusing on the following tasks:
-                #                1. **List all actions in chronological order**: Provide a timeline of actions with their timestamps and descriptions.
-                #                2. **Identify individuals and their roles**: Recognize all individuals in the video and mark their identities (e.g., person A, person B).
-                #                3. **Detect specific events**: Identify key events such as fights, falls, or other notable incidents, and provide their timestamps.
-                #                4. **Classify behaviors**: Categorize behaviors (e.g., walking, running, suspicious activities) and list their occurrence times.
-                #                5. **Track object movement**: Track the movement trajectory of a specified object (e.g., a bag, vehicle) and provide its coordinates over time.
-                #                6. **Analyze group behavior**: Analyze group behavior patterns (e.g., gathering, dispersing) and describe their changes.
-                #                7. **Identify and track specific objects**: Recognize and track specific objects (e.g., bags, vehicles) and provide their movement paths.
-                #                Ensure the description is structured, detailed, and covers all significant elements of the video.
-                #                """
+                #query = f"The transcript of the current video:\n{segment_transcript}.\nNow provide a description (caption) of the video in English."
+                query = f"""
+                                The transcript of the current video:\n{segment_transcript}.\n
+                                Please analyze the video and provide a detailed description in English, focusing on the following tasks:
+                                1. **List all actions in chronological order**: Provide a timeline of actions with their timestamps and descriptions.
+                                2. **Identify individuals and their roles**: Recognize all individuals in the video and mark their identities (e.g., person A, person B).
+                                3. **Detect specific events**: Identify key events such as fights, falls, or other notable incidents, and provide their timestamps.
+                                4. **Classify behaviors**: Categorize behaviors (e.g., walking, running, suspicious activities) and list their occurrence times.
+                                5. **Track object movement**: Track the movement trajectory of a specified object (e.g., a bag, vehicle) and provide its coordinates over time.
+                                6. **Analyze group behavior**: Analyze group behavior patterns (e.g., gathering, dispersing) and describe their changes.
+                                7. **Identify and track specific objects**: Recognize and track specific objects (e.g., bags, vehicles) and provide their movement paths.
+                                Ensure the description is structured, detailed, and covers all significant elements of the video.
+                                """
                 #query = f"""The transcript of the current video:\n{segment_transcript}.\n
                 #Please analyze the video and provide a detailed description in English, focusing on the following tasks:
                 ## Security Behavior Recognition Protocol
