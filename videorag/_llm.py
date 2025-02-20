@@ -152,8 +152,8 @@ async def oci_embedding(texts: list[str]) -> np.ndarray:
     retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
 )
 async def ollama_embedding(texts: list[str]) -> np.ndarray:
-    ollama_client = ollama.Client(host=config("EMBEDDING_HOST"))
-    data = ollama_client.embed(model=config("EMBED_MODEL"), input=texts)
+    ollama_client = ollama.Client(host=config("OLLAMA_EMBEDDING_HOST"))
+    data = ollama_client.embed(model=config("OLLAMA_EMBED_MODEL"), input=texts)
     return np.array(data["embeddings"])
 
 @retry(
