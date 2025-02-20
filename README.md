@@ -53,6 +53,7 @@ pip install timm ftfy regex einops fvcore eva-decord==0.6.1 iopath matplotlib ty
 pip install ctranslate2==4.4.0 faster_whisper==1.0.3 neo4j hnswlib xxhash nano-vectordb
 pip install transformers==4.37.1
 pip install tiktoken openai tenacity
+pip install ollama python-decouple
 
 # Install ImageBind using the provided code in this repository, where we have removed the requirements.txt to avoid environment conflicts.
 cd ImageBind

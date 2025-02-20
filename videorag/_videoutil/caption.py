@@ -26,6 +26,44 @@ def segment_caption(video_name, video_path, segment_index2name, transcripts, seg
                 video_frames = encode_video(video, frame_times)
                 segment_transcript = transcripts[index]
                 query = f"The transcript of the current video:\n{segment_transcript}.\nNow provide a description (caption) of the video in English."
+                #query = f"""
+                #                The transcript of the current video:\n{segment_transcript}.\n
+                #                Please analyze the video and provide a detailed description in English, focusing on the following tasks:
+                #                1. **List all actions in chronological order**: Provide a timeline of actions with their timestamps and descriptions.
+                #                2. **Identify individuals and their roles**: Recognize all individuals in the video and mark their identities (e.g., person A, person B).
+                #                3. **Detect specific events**: Identify key events such as fights, falls, or other notable incidents, and provide their timestamps.
+                #                4. **Classify behaviors**: Categorize behaviors (e.g., walking, running, suspicious activities) and list their occurrence times.
+                #                5. **Track object movement**: Track the movement trajectory of a specified object (e.g., a bag, vehicle) and provide its coordinates over time.
+                #                6. **Analyze group behavior**: Analyze group behavior patterns (e.g., gathering, dispersing) and describe their changes.
+                #                7. **Identify and track specific objects**: Recognize and track specific objects (e.g., bags, vehicles) and provide their movement paths.
+                #                Ensure the description is structured, detailed, and covers all significant elements of the video.
+                #                """
+                #query = f"""The transcript of the current video:\n{segment_transcript}.\n
+                #Please analyze the video and provide a detailed description in English, focusing on the following tasks:
+                ## Security Behavior Recognition Protocol
+                #        **Detection Objectives**: Distinguish between ① Abnormal Loitering ② Intrusion Detection ③ Elderly Fall ④ Package Delivery
+                #
+                #        ## Input Parameters
+                #        - **Video Description**: [Please provide an objective description of the core content of the video in 50-80 words]
+                #        - **Object Characteristics**: [Age Group/Clothing/Carried Items]
+                #        - **Behavior Sequence**: [Time Period] [Behavior Description]
+                #          Example: 00:11-00:23: Two men walk along a path, with several chickens approaching them.
+                #
+                #        ## Output Specifications
+                #        1. **Basic Judgment**:
+                #           - Abnormal Loitering (0-1)
+                #           - Intrusion Detection (0-1)
+                #           - Person Fall (0-1)
+                #           - Package Delivery (0-1)
+                #
+                #        2. **Event Classification** (Multiple Selection Tags):
+                #           - ( Abnormal Loitering | Area Intrusion | Person Fall | Package Delivery | No Event )
+                #           [Select the most relevant tags based on the probability values of the basic judgment. If no significant event is detected, choose "No Event."]
+                #
+                #        3. **Behavior Nature** (Single Selection Tag):
+                #           - ( Normal Behavior | Suspicious Behavior | Emergency Situation )
+                #           [Determine the nature of the behavior based on the event classification and the probability values of the basic judgment.]
+                #"""
                 msgs = [{'role': 'user', 'content': video_frames + [query]}]
                 params = {}
                 params["use_image_id"] = False
