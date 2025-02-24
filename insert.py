@@ -31,6 +31,8 @@ if __name__ == '__main__':
     work_base_dir = config("WORKING_DIR")
     files = os.listdir(video_path)
     #video_paths = list(map(lambda filename: os.path.join(video_path,filename), files))
+    videorag = VideoRAG(cheap_model_func=gpt_4o_mini_complete,
+                        best_model_func=gpt_4o_mini_complete)
 
     for video in files:
         for split_interval in range(3, 30, 3):
@@ -41,7 +43,8 @@ if __name__ == '__main__':
             os.makedirs(work_dir)  # Create the directory
             print(f"Directory '{work_dir}' is ready.")
             print(f"start {video} {interval} processing ...at " + datetime.now().strftime("%H:%M:%S"))
-            videorag = VideoRAG(video_segment_length=3,cheap_model_func=gpt_4o_mini_complete, best_model_func=gpt_4o_mini_complete, working_dir=work_dir)
+            videorag.video_segment_length = split_interval
+            videorag.working_dir = work_dir
             videorag.insert_video(video_path_list=[os.path.join(video_path,video)])
             print(f"end {video} {interval} processing ...at " + datetime.now().strftime("%H:%M:%S"))
             if "Elderly-Fall" in video:
