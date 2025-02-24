@@ -100,6 +100,7 @@ class NanoVectorDBVideoSegmentStorage(BaseVectorStorage):
             return []
         list_data, video_paths = [], []
         cache_path = os.path.join(self.global_config["working_dir"], '_cache', video_name)
+        print(f"cache_path is {cache_path}")
         index_list = list(segment_index2name.keys())
         for index in index_list:
             list_data.append({
