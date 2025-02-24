@@ -731,11 +731,39 @@ async def videorag_query(
         sys_prompt_temp = PROMPTS["videorag_response_wo_reference"]
     else:
         sys_prompt_temp = PROMPTS["videorag_response"]
-        
+
+    customer_format = """请按照以下格式生成视频描述：
+
+视频描述
+视频展示了一个{环境描述}，{场景特点}。{人物活动描述}。
+
+对象特征
+年龄段：{年龄描述，例如：成年人、青少年等}
+穿着：{服饰描述，例如：外套、卫衣、长裤等}
+携带物品：{携带物品，例如：水杯、手机、背包等}
+行为序列
+• {时间段1}：{人物行为1}  
+• {时间段2}：{人物行为2}  
+• {时间段3}：{人物行为3}  
+请按照时间顺序，清晰描述视频中的关键行为。
+
+输出规范
+1. 基础判断
+◦ 异常停留: {0-1之间的数值}  
+◦ 入侵检测: {0-1之间的数值}  
+◦ 人员跌倒: {0-1之间的数值}  
+◦ 包裹投递: {0-1之间的数值}  
+请为每项指标提供 0~1 之间的数值，表示该事件的可能性。
+
+2. 事件分类
+◦ {事件类型，例如：异常停留、人员聚集等}  
+3. 行为性质
+◦ {行为性质，例如：可疑行为、正常行为等}"""
     sys_prompt = sys_prompt_temp.format(
         video_data=retreived_video_context,
         chunk_data=retreived_chunk_context,
-        response_type=query_param.response_type
+        response_type=query_param.response_type,
+        customer_format=customer_format
     )
     #print("-"*50)
     #print(f"sys_prompt is {sys_prompt}")
