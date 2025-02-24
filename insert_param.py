@@ -27,7 +27,7 @@ if __name__ == '__main__':
     video_paths = []
     if len(sys.argv) > 1:
         video_path = config("ORIGINAL_VIDEO_PATH")
-        video_paths.append(video_path,str(sys.argv[1]))
+        video_paths.append(os.path.join(video_path,str(sys.argv[1])))
     else:
         exit(-1)
         #video_paths = [
