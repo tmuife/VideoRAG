@@ -30,18 +30,18 @@ if __name__ == '__main__':
     video_path = config("ORIGINAL_VIDEO_PATH")
     work_base_dir = config("WORKING_DIR")
     files = os.listdir(video_path)
-    video_paths = list(map(lambda filename: os.path.join(video_path,filename), files))
+    #video_paths = list(map(lambda filename: os.path.join(video_path,filename), files))
 
-    for video in video_paths:
+    for video in files:
         for split_interval in range(3, 30, 3):
             interval = str(split_interval)
-            work_dir = os.path.join(os.path.join(work_base_dir,video),interval)
+            work_dir = os.path.join(os.path.join(work_base_dir,video[:-4]),interval)
             if os.path.exists(work_dir):
                 shutil.rmtree(work_dir)  # Delete the directory
             os.makedirs(work_dir)  # Create the directory
             print(f"Directory '{work_dir}' is ready.")
             print(f"start {video} {interval} processing ...at " + datetime.now().strftime("%H:%M:%S"))
             videorag = VideoRAG(video_segment_length=3,cheap_model_func=gpt_4o_mini_complete, best_model_func=gpt_4o_mini_complete, working_dir=work_dir)
-            videorag.insert_video(video_path_list=video_paths)
+            videorag.insert_video(video_path_list=[os.path.join(video_path,video)])
             print(f"end {video} {interval} processing ...at " + datetime.now().strftime("%H:%M:%S"))
     print("end customer data processing ...at " + datetime.now().strftime("%H:%M:%S"))
