@@ -44,4 +44,7 @@ if __name__ == '__main__':
             videorag = VideoRAG(video_segment_length=3,cheap_model_func=gpt_4o_mini_complete, best_model_func=gpt_4o_mini_complete, working_dir=work_dir)
             videorag.insert_video(video_path_list=[os.path.join(video_path,video)])
             print(f"end {video} {interval} processing ...at " + datetime.now().strftime("%H:%M:%S"))
+            if "Elderly-Fall" in video:
+                if split_interval> 12:
+                    break
     print("end customer data processing ...at " + datetime.now().strftime("%H:%M:%S"))
