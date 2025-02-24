@@ -33,7 +33,8 @@ if __name__ == '__main__':
     video_paths = list(map(lambda filename: os.path.join(video_path,filename), files))
 
     for video in video_paths:
-        for interval in range(3, 30, 3):
+        for split_interval in range(3, 30, 3):
+            interval = str(split_interval)
             work_dir = os.path.join(os.path.join(work_base_dir,video),interval)
             if os.path.exists(work_dir):
                 shutil.rmtree(work_dir)  # Delete the directory
