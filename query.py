@@ -1,4 +1,4 @@
-import os
+import os, sys
 import logging
 import warnings
 import multiprocessing
@@ -29,15 +29,23 @@ if __name__ == '__main__':
     #    , "Please track the movement trajectory of the specified object in the video and provide the coordinates."
     #    , "Please analyze the group behavior patterns in the video and describe their changes."
     #    , "Please identify and track specific objects in the video and provide their movement paths."]
-    querys = ["Please list all actions in the video along with their timestamps and descriptions."]
+    #querys = ["Please list all actions in the video along with their timestamps and descriptions."]
     #query = 'What is the relationship between Iron Man and Spider-Man? How do they meet, and how does Iron Man help Spider-Man?'
+    querys = []
     param = QueryParam(mode="videorag")
     # if param.wo_reference = False, VideoRAG will add reference to video clips in the response
     param.wo_reference = True
 
+    work_base_dir = config("WORKING_DIR")
+    work_dir = ""
+    if len(sys.argv) > 2:
+        querys.append(str(sys.argv[2]))
+    else:
+        exit(-1)
     #videorag = VideoRAG(cheap_model_func=oci_cohere_complete, best_model_func=oci_cohere_complete, working_dir=f"./videorag-workdir")
-    videorag = VideoRAG(cheap_model_func=gpt_4o_mini_complete, best_model_func=gpt_4o_mini_complete,
-                        working_dir=f"./videorag-workdir")
+    videorag = VideoRAG(cheap_model_func=gpt_4o_mini_complete,
+                        best_model_func=gpt_4o_mini_complete,
+                        working_dir=os.path.join(work_base_dir,str(sys.argv[1])[:-4]))
     videorag.load_caption_model(debug=False)
     for query in querys:
         print(f"start [{query}]"+"**"*50)
