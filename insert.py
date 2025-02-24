@@ -37,7 +37,7 @@ if __name__ == '__main__':
     for video in files:
         for split_interval in range(3, 30, 3):
             interval = str(split_interval)
-            work_dir = os.path.join(work_base_dir,(video[:-4]+"_interval"))
+            work_dir = os.path.join(work_base_dir,(video[:-4]+"_"+interval))
             if os.path.exists(work_dir):
                 shutil.rmtree(work_dir)  # Delete the directory
             os.makedirs(work_dir)  # Create the directory
