@@ -1,5 +1,5 @@
 #!/bin/bash
-conda activate videorag
+/home/ubuntu/miniforge3/condabin/conda activate videorag
 #rm -rf videorag-workdir
 #mkdir -p videorag-workdir
 #python -u insert.py > videorag-workdir/insert.log

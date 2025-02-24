@@ -218,12 +218,126 @@ Generate a response of the target length and format that responds to the user's 
 ---Notice---
 Please add sections and commentary as appropriate for the length and format if necessary. Format the response in Markdown.
 """
+
+sys_prompt_long_stay = """---Role---
+
+You are a helpful assistant responding to a query with retrieved knowledge.
+
+---Goal---
+
+Generate a response of the target length and format that responds to the user's question with relevant general knowledge.
+Summarize useful and relevant information from the retrieved text chunks and the information retrieved from videos, suitable for the specified response length and format.
+If you don't know the answer or if the input data tables do not contain sufficient information to provide an answer, just say so. Do not make anything up.
+Do not include information where the supporting evidence for it is not provided.
+
+---Target response length and format---
+
+Multiple Paragraphs
+
+---Retrieved Information From Videos---
+
+
+-----Retrieved Knowledge From Videos-----
+```csv
+"video_name",   "start_time",   "end_time",     "content"
+"LongStay",     "0:0:0",        "0:0:30",       "Caption:
+The video begins with a view of a concrete surface, possibly part of a rooftop or terrace area. The ground is cracked and worn out, surrounded by greenery on the left side. A person wearing white shoes appears in the frame from behind, walking along the edge near a brick wall that borders the area.As the scene develops, more details become visible: the person starts to walk away from the camera towards an open space below, which includes some buildings and vegetation. To the right, there are various items such as bamboo poles and other materials scattered around, indicating a construction site or storage area. The person continues walking down this path, passing by these items.The narrative progresses with the same individual now standing still on the pathway, facing slightly upwards, perhaps looking at something above them. The background remains consistent with dense foliage and several structures partially obscured by trees. The blue disc-like object seen earlier lies further down the path. Text appears in Chinese characters on the screen: '小晓筱' (Xiao Xiao Xiao) and '我说人间冷暖' (I say the coldness and warmth of human nature), suggesting a reflective or philosophical theme related to the content being shown.The video wraps up with the person turning their body slightly while remaining in place, continuing to look into the distance. The surroundings remain unchanged, maintaining focus on the pathway, the scattered materials, and the natural environment surrounding it.
+Transcript:"
+"LongStay",     "0:0:30",       "0:0:48",       "Caption:
+The video begins with a view of an outdoor area filled with various items, including wooden poles and other materials stacked against the wall. A person wearing a white shirt and black shorts is seen crouching near some equipment under a makeshift shelter made of bamboo poles and tarpaulin. The background features lush greenery and a dirt path leading to another part of the area. The person stands up, walks towards the camera holding something in their hand, then turns around and starts walking down the dirt path.The scene continues with the same individual now further away from the camera, still on the dirt path surrounded by dense foliage and scattered red bricks. They are barefoot as they walk past more stacks of wood and other construction materials. As they move along the path, which curves slightly upwards, the surrounding environment remains consistent with previous frames, featuring bamboo structures and additional piles of materials like tires and tarps.
+Transcript:
+[0.00s -> 1.00s]  of the
+[1.00s -> 2.00s]  question.
+[2.00s -> 3.00s]  I have to say,
+[3.00s -> 4.00s]  however,
+[4.00s -> 5.00s]  actually,
+[5.00s -> 6.00s]  he's
+[6.00s -> 7.00s]  this time
+[7.00s -> 8.00s]  she found
+[8.00s -> 9.00s]  she's
+[9.00s -> 10.00s]  she's
+[10.00s -> 11.00s]  he's,
+[11.00s -> 12.00s]  he's
+[12.00s -> 13.00s]  many,
+[13.00s -> 14.00s]  many times,
+[14.00s -> 15.00s]  the
+[15.00s -> 16.00s]  sure is,
+[16.00s -> 17.00s]  the
+[17.00s -> 18.00s]  the way,
+[18.00s -> 19.00s]  the"
+```
+
+
+---Retrieved Text Chunks---
+
+Caption:
+1. **List all actions in chronological order**:   - The person is standing on a concrete surface near a brick wall.   - They throw an object, possibly a frisbee or disc, onto the ground below them.2. **Identify individuals and their roles**:   - One individual wearing white shoes, black shorts, and a light-colored shirt (possibly with text) appears to be throwing the object.3. **Detect specific events**:   - There are no significant fights, falls, broken cars, or other notable incidents detected during this sequence of frames.4. **Classify behaviors**:   - Walking: Person moves towards the edge where they threw the object.   - Throwing objects: Person throws something onto the ground from above.5. **Track object movement**:   - An object (possibly a frisbee or disc) is thrown by the person down into what seems like a lower area or yard.6. **Analyze group behavior**:   - No groups form; only one individual interacts throughout these sequences.7. **Identify and track specific objects**:   - Object trajectory: The frisbee-like item is seen falling downwards after being thrown by the person.Overall summary:In the video, there's a scene showing someone at the top of a structure who throws an object downward. This action takes place against a backdrop featuring greenery, buildings, and construction materials scattered around. Throughout the clip, the main focus remains on the act of throwing and observing the path of the object as it descends out of view.
+Transcript:
+
+
+Caption:
+The video begins with a scene showing an outdoor area filled with various items, including wooden poles and other construction materials. A person wearing a white shirt and black shorts is seen sitting near the center of this cluttered space under a makeshift shelter supported by bamboo poles. The background features lush greenery and some buildings in the distance.As the sequence progresses, the same individual starts walking along a dirt path that runs alongside the cluttered area. This path appears to be elevated, as there are more trees and vegetation visible on one side. The person continues to walk down the path away from the camera's perspective, maintaining their position throughout the frames.Throughout the entire clip, no significant changes occur except for the movement of the individual who walks further into the distance. There are no specific events such as fights or falls, nor any notable movements of objects apart from the person’s progression down the path. The environment remains consistent, featuring the same construction materials, bamboo supports, and natural surroundings without any new elements introduced during the sequence.
+Transcript:
+[0.00s -> 1.00s]  of the
+[1.00s -> 2.00s]  question.
+[2.00s -> 3.00s]  I have to say,
+[3.00s -> 4.00s]  however,
+[4.00s -> 5.00s]  actually,
+[5.00s -> 6.00s]  he's
+[6.00s -> 7.00s]  this time
+[7.00s -> 8.00s]  she found
+[8.00s -> 9.00s]  she's
+[9.00s -> 10.00s]  she's
+[10.00s -> 11.00s]  he's,
+[11.00s -> 12.00s]  he's
+[12.00s -> 13.00s]  many,
+[13.00s -> 14.00s]  many times,
+[14.00s -> 15.00s]  the
+[15.00s -> 16.00s]  sure is,
+[16.00s -> 17.00s]  the
+[17.00s -> 18.00s]  the way,
+[18.00s -> 19.00s]  the
+
+---Goal---
+
+Generate a response of the target length and format that responds to the user's question with relevant general knowledge.
+请按照以下格式生成视频描述：
+
+视频描述
+视频展示了一个{环境描述}，{场景特点}。{人物活动描述}。
+
+对象特征
+年龄段：{年龄描述，例如：成年人、青少年等}
+穿着：{服饰描述，例如：外套、卫衣、长裤等}
+携带物品：{携带物品，例如：水杯、手机、背包等}
+行为序列
+• {时间段1}：{人物行为1}  
+• {时间段2}：{人物行为2}  
+• {时间段3}：{人物行为3}  
+请按照时间顺序，清晰描述视频中的关键行为。
+
+输出规范
+1. 基础判断
+◦ 异常停留: {0-1之间的数值}  
+◦ 入侵检测: {0-1之间的数值}  
+◦ 人员跌倒: {0-1之间的数值}  
+◦ 包裹投递: {0-1之间的数值}  
+请为每项指标提供 0~1 之间的数值，表示该事件的可能性。
+
+2. 事件分类
+◦ {事件类型，例如：异常停留、人员聚集等}  
+3. 行为性质
+◦ {行为性质，例如：可疑行为、正常行为等}  
+
+---Notice---
+Please add sections and commentary as appropriate for the length and format if necessary. Format the response in Markdown.
+"""
 from openai import OpenAI, AsyncAzureOpenAI, APIConnectionError, RateLimitError
 from decouple import config
 query = "Please list all actions in the video along with their timestamps and descriptions."
 client = OpenAI(api_key=config("API_KEY"),base_url=config("BASE_URL"))
 messages = []
-messages.append({"role": "system", "content": sys_prompt_multi_object})
+messages.append({"role": "system", "content": sys_prompt_long_stay})
 messages.append({"role": "user", "content": query})
 response = client.chat.completions.create(
         model="gpt-4o-mini", messages=messages

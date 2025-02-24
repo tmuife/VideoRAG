@@ -737,10 +737,10 @@ async def videorag_query(
         chunk_data=retreived_chunk_context,
         response_type=query_param.response_type
     )
-    print("-"*50)
-    print(f"sys_prompt is {sys_prompt}")
-    print(f"query is {query}")
-    print("-" * 50)
+    #print("-"*50)
+    #print(f"sys_prompt is {sys_prompt}")
+    #print(f"query is {query}")
+    #print("-" * 50)
     response = await use_model_func(
         query,
         system_prompt=sys_prompt,

@@ -366,6 +366,42 @@ In one segment, the film highlights the devastating effects of deforestation on 
 Please add sections and commentary as appropriate for the length and format if necessary. Format the response in Markdown.
 """
 
+#PROMPTS[
+#    "videorag_response_wo_reference"
+#] = """---Role---
+#
+#You are a helpful assistant responding to a query with retrieved knowledge.
+#
+#---Goal---
+#
+#Generate a response of the target length and format that responds to the user's question with relevant general knowledge.
+#Summarize useful and relevant information from the retrieved text chunks and the information retrieved from videos, suitable for the specified response length and format.
+#If you don't know the answer or if the input data tables do not contain sufficient information to provide an answer, just say so. Do not make anything up.
+#Do not include information where the supporting evidence for it is not provided.
+#
+#---Target response length and format---
+#
+#{response_type}
+#
+#---Retrieved Information From Videos---
+#
+#{video_data}
+#
+#---Retrieved Text Chunks---
+#
+#{chunk_data}
+#
+#---Goal---
+#
+#Generate a response of the target length and format that responds to the user's question with relevant general knowledge.
+#Summarize useful and relevant information from the retrieved text chunks and the information retrieved from videos, suitable for the specified response length and format.
+#If you don't know the answer or if the input data tables do not contain sufficient information to provide an answer, just say so. Do not make anything up.
+#Do not include information where the supporting evidence for it is not provided.
+#
+#---Notice---
+#Please add sections and commentary as appropriate for the length and format if necessary. Format the response in Markdown.
+#"""
+
 PROMPTS[
     "videorag_response_wo_reference"
 ] = """---Role---
@@ -394,9 +430,33 @@ Do not include information where the supporting evidence for it is not provided.
 ---Goal---
 
 Generate a response of the target length and format that responds to the user's question with relevant general knowledge.
-Summarize useful and relevant information from the retrieved text chunks and the information retrieved from videos, suitable for the specified response length and format.
-If you don't know the answer or if the input data tables do not contain sufficient information to provide an answer, just say so. Do not make anything up.
-Do not include information where the supporting evidence for it is not provided.
+请按照以下格式生成视频描述：
+
+视频描述
+视频展示了一个{环境描述}，{场景特点}。{人物活动描述}。
+
+对象特征
+年龄段：{年龄描述，例如：成年人、青少年等}
+穿着：{服饰描述，例如：外套、卫衣、长裤等}
+携带物品：{携带物品，例如：水杯、手机、背包等}
+行为序列
+• {时间段1}：{人物行为1}  
+• {时间段2}：{人物行为2}  
+• {时间段3}：{人物行为3}  
+请按照时间顺序，清晰描述视频中的关键行为。
+
+输出规范
+1. 基础判断
+◦ 异常停留: {0-1之间的数值}  
+◦ 入侵检测: {0-1之间的数值}  
+◦ 人员跌倒: {0-1之间的数值}  
+◦ 包裹投递: {0-1之间的数值}  
+请为每项指标提供 0~1 之间的数值，表示该事件的可能性。
+
+2. 事件分类
+◦ {事件类型，例如：异常停留、人员聚集等}  
+3. 行为性质
+◦ {行为性质，例如：可疑行为、正常行为等}  
 
 ---Notice---
 Please add sections and commentary as appropriate for the length and format if necessary. Format the response in Markdown.
