@@ -4,7 +4,7 @@ import warnings
 import multiprocessing
 from decouple import config
 from datetime import datetime
-
+import shutil
 warnings.filterwarnings("ignore")
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
@@ -21,12 +21,26 @@ from videorag import VideoRAG, QueryParam
 if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
 
-    print("start customer data processing ...at "+ datetime.now().strftime("%H:%M:%S"))
+    print("start customer data processing ...at " + datetime.now().strftime("%H:%M:%S"))
     # Please enter your video file path in this list; there is no limit on the length.
     # Here is an example; you can use your own videos instead.
-    video_paths = [
-        '/home/ubuntu/data/videorag_video/多目标实拍.mp4',
-    ]
-    videorag = VideoRAG(cheap_model_func=gpt_4o_mini_complete, best_model_func=gpt_4o_mini_complete, working_dir=f"./videorag-workdir")
-    videorag.insert_video(video_path_list=video_paths)
+    #video_paths = [
+    #    '/home/ubuntu/data/videorag_video/多目标实拍.mp4',
+    #]
+    video_path = config("ORIGINAL_VIDEO_PATH")
+    work_base_dir = config("WORKING_DIR")
+    files = os.listdir(video_path)
+    video_paths = list(map(lambda filename: os.path.join(video_path,filename), files))
+
+    for video in video_paths:
+        for interval in range(3, 30, 3):
+            work_dir = os.path.join(os.path.join(work_base_dir,video),interval)
+            if os.path.exists(work_dir):
+                shutil.rmtree(work_dir)  # Delete the directory
+            os.makedirs(work_dir)  # Create the directory
+            print(f"Directory '{work_dir}' is ready.")
+            print(f"start {video} {interval} processing ...at " + datetime.now().strftime("%H:%M:%S"))
+            videorag = VideoRAG(video_segment_length=3,cheap_model_func=gpt_4o_mini_complete, best_model_func=gpt_4o_mini_complete, working_dir=work_dir)
+            videorag.insert_video(video_path_list=video_paths)
+            print(f"end {video} {interval} processing ...at " + datetime.now().strftime("%H:%M:%S"))
     print("end customer data processing ...at " + datetime.now().strftime("%H:%M:%S"))
