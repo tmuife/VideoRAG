@@ -3,13 +3,12 @@
 <a href='https://arxiv.org/abs/2502.01549'><img src='https://img.shields.io/badge/arXiv-2502.01549-b31b1b'></a>
 <a href='https://github.com/HKUDS/VideoRAG/issues/1'><img src='https://img.shields.io/badge/群聊-wechat-green'></a>
 
-
 <img src='VideoRAG_cover.png' />
 
  This is the PyTorch implementation for VideoRAG proposed in this paper:
 
- >**VideoRAG: Retrieval-Augmented Generation with Extreme Long-Context Videos**  
- >Xubin Ren*, Lingrui Xu*, Long Xia, Shuaiqiang Wang, Dawei Yin, Chao Huang†
+> **VideoRAG: Retrieval-Augmented Generation with Extreme Long-Context Videos**  
+> Xubin Ren*, Lingrui Xu*, Long Xia, Shuaiqiang Wang, Dawei Yin, Chao Huang†
 
 \* denotes equal contribution.
 † denotes corresponding author
@@ -25,20 +24,25 @@
 VideoRAG introduces a novel dual-channel architecture that synergistically combines graph-driven textual knowledge grounding for modeling cross-video semantic relationships with hierarchical multimodal context encoding to preserve spatiotemporal visual patterns, enabling unbounded-length video understanding through dynamically constructed knowledge graphs that maintain semantic coherence across multi-video contexts while optimizing retrieval efficiency via adaptive multimodal fusion mechanisms.
 
 💻 **Efficient Extreme Long-Context Video Processing**
+
 - Leveraging a Single NVIDIA RTX 3090 GPU (24G) to comprehend Hundreds of Hours of video content 💪
 
 🗃️ **Structured Video Knowledge Indexing**
+
 - Multi-Modal Knowledge Indexing Framework distills hundreds of hours of video into a concise, structured knowledge graph 🗂️
 
 🔍 **Multi-Modal Retrieval for Comprehensive Responses**
+
 - Multi-Modal Retrieval Paradigm aligns textual semantics and visual content to identify the most relevant video for comprehensive responses 💬
 
 📚 **The New Established LongerVideos Benchmark**
+
 - The new established LongerVideos Benchmark features over 160 Videos totaling 134+ Hours across lectures, documentaries, and entertainment 🎬
 
 ## Installation
 
 To utilize VideoRAG, please first create a conda environment with the following commands:
+
 ```bash
 conda create --name videorag python=3.11
 conda activate videorag
@@ -53,21 +57,46 @@ pip install timm ftfy regex einops fvcore eva-decord==0.6.1 iopath matplotlib ty
 pip install ctranslate2==4.4.0 faster_whisper==1.0.3 neo4j hnswlib xxhash nano-vectordb
 pip install transformers==4.37.1
 pip install tiktoken openai tenacity
-pip install ollama python-decouple
-pip install soundfile  #if use MiniCPM-o-2_6
+
 
 # Install ImageBind using the provided code in this repository, where we have removed the requirements.txt to avoid environment conflicts.
 cd ImageBind
 pip install .
 ```
 
+If you want to use ollama and .env config file
+
+```
+pip install ollama python-decouple
+
+```
+
+If you want to user MiniCPM-o-2.6
+
+```
+update transformers to transformers==4.44.2
+pip install librosa==0.9.0
+pip install soundfile==0.12.1
+pip install vector-quantize-pytorch==1.18.5
+pip install vocos==0.1.0
+pip install decord
+pip install Pillow==10.1.0
+
+didn't update torch==2.3.1
+```
+
+
+
 Then, please download the necessary checkpoints in **the repository's root folder** for MiniCPM-V, Whisper, and ImageBind as follows:
+
 ```bash
 # Make sure you have git-lfs installed (https://git-lfs.com)
 git lfs install
 
 # minicpm-v
 git lfs clone https://huggingface.co/openbmb/MiniCPM-V-2_6-int4
+or 
+git lfs clone https://huggingface.co/openbmb/MiniCPM-o-2_6
 
 # whisper
 git lfs clone https://huggingface.co/Systran/faster-distil-whisper-large-v3
@@ -80,6 +109,7 @@ cd ../
 ```
 
 Your final directory structure after downloading all checkpoints should look like this:
+
 ```shell
 VideoRAG
 ├── .checkpoints
@@ -103,6 +133,7 @@ VideoRAG is capable of extracting knowledge from multiple videos and answering q
 > Currently, VideoRAG has only been tested in an English environment. To process videos in multiple languages, it is recommended to modify the  ```WhisperModel``` in [asr.py](VideoRAG/videorag/_videoutil/asr.py). For more details, please refer to [faster-whisper](https://github.com/systran/faster-whisper).
 
 **At first**, let the VideoRAG extract and indexing the knowledge from given videos (Only one GPU with 24GB of memory is sufficient, such as the RTX 3090):
+
 ```python
 import os
 import logging
@@ -133,6 +164,7 @@ if __name__ == '__main__':
 ```
 
 **Then**, ask any questions about the videos! Here is an exmaple:
+
 ```python
 import os
 import logging
@@ -166,14 +198,15 @@ if __name__ == '__main__':
 ## Evaluation
 
 ### LongerVideos
+
 We constructed the LongerVideos benchmark to evaluate the model's performance in comprehending multiple long-context videos and answering open-ended queries. All the videos are open-access videos on YouTube, and we record the URLs of the collections of videos as well as the corresponding queries in the [JSON](longervideos/dataset.json) file.
 
-| Video Type       | #video list | #video | #query | #avg. queries per list | #overall duration      |
-|------------------|------------:|-------:|-------:|-----------------------:|-------------------------|
-| **Lecture**      | 12          | 135    | 376    | 31.3                   | ~ 64.3 hours           |
-| **Documentary**  | 5           | 12     | 114    | 22.8                   | ~ 28.5 hours           |
-| **Entertainment**| 5           | 17     | 112    | 22.4                   | ~ 41.9 hours           |
-| **All**          | 22          | 164    | 602    | 27.4                   | ~ 134.6 hours          |
+| Video Type        | #video list | #video | #query | #avg. queries per list | #overall duration |
+| ----------------- | -----------:| ------:| ------:| ----------------------:| ----------------- |
+| **Lecture**       | 12          | 135    | 376    | 31.3                   | ~ 64.3 hours      |
+| **Documentary**   | 5           | 12     | 114    | 22.8                   | ~ 28.5 hours      |
+| **Entertainment** | 5           | 17     | 112    | 22.4                   | ~ 41.9 hours      |
+| **All**           | 22          | 164    | 602    | 27.4                   | ~ 134.6 hours     |
 
 ### Process LongerVideos with VideoRAG
 
@@ -222,7 +255,6 @@ python batch_winrate_eval_download.py
 
 # Fourth Step: Calculate the results. Please enter the parsed result file name in the file.
 python batch_winrate_eval_calculate.py
-
 ```
 
 #### Quantitative Comparison
@@ -246,7 +278,9 @@ python batch_winrate_quant_calculate.py
 ```
 
 ## Citation
+
 If you find this work is helpful to your research, please consider citing our paper:
+
 ```bibtex
 @article{VideoRAG,
   title={VideoRAG: Retrieval-Augmented Generation with Extreme Long-Context Videos},
@@ -259,5 +293,6 @@ If you find this work is helpful to your research, please consider citing our pa
 **Thank you for your interest in our work!**
 
 ### Acknowledgement
+
 You may refer to related work that serves as foundations for our framework and code repository, 
 [nano-graphrag](https://github.com/gusye1234/nano-graphrag) and [LightRAG](https://github.com/HKUDS/LightRAG). Thanks for their wonderful works.
