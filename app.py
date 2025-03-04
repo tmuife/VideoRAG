@@ -16,6 +16,9 @@ import logging
 import warnings
 import multiprocessing
 import asyncio
+
+from videorag.cache import AsyncStatus
+
 warnings.filterwarnings("ignore")
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
@@ -23,25 +26,42 @@ video_storage_path = config("VIDEO_STORAGE_PATH")
 
 from videorag._llm import *
 from videorag import VideoRAG, QueryParam
-videorag:VideoRAG
+from videorag.cache import AsyncStatus
+#videorag:VideoRAG
 
+class ChatRequest(BaseModel):
+    message: str
+    query_type: str
+    workspace: str
+class Response(BaseModel):
+    status: str
+    data: Optional[Any] = None
+    message: Optional[str] = None
+def jsonMsg(status,data,error):
+    result = {}
+    result["status"] = status
+    if "success" == status:
+        result["data"] = data
+    else:
+        result["error"] = error
+    return json.dumps(result)
+status = AsyncStatus()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     #spawn 兼容性好，子进程全新启动，但创建速度慢
     #fork 快速，子进程共享父进程的内存，但在多线程时可能有问题
     multiprocessing.set_start_method('spawn')
-    #global videorag
-    #videorag = VideoRAG(cheap_model_func=gpt_4o_mini_complete,
-    #                    best_model_func=gpt_4o_mini_complete,
-    #                    working_dir=os.path.join(work_base_dir,str(sys.argv[1])[:-4]))
-    #videorag.insert_video(video_path_list=video_paths)
     #del videorag
     #import gc
     #gc.collect()  # 运行 Python 垃圾回收
     #import torch
     #torch.cuda.empty_cache()  # 释放未使用的 GPU 显存
-    print("done!")
+    print("lifespan done!")
+    loop = asyncio.get_running_loop()
+    print(id(loop))
+    status.set_id(str(id(loop)))
     yield
+
 
 
 app = FastAPI(
@@ -63,24 +83,7 @@ async def default(request: Request):
     return templates.TemplateResponse(
         request=request, name="chat.html"
     )
-#@app.post("/upload")
-#async def upload(files: Annotated[list[bytes], File()],request: Request):
-#    for file in files:
-#        try:
-#            file_name = file.filename
-#            content = file.decode("utf-8")
-#            print(request)
-#        except UnicodeDecodeError:
-#            # If UTF-8 decoding fails, try other encodings
-#            content = file.decode("gbk")
-#        # Insert file content
-#        #loop = asyncio.get_event_loop()
-#        ##await loop.run_in_executor(None, lambda: rag.insert(content))
-#        #await rag.ainsert(content)
-#        #return Response(
-#        #    status="success",
-#        #    message=f"File content inserted successfully",
-#        #)
+
 """
 curl -X 'POST' \
   'http://127.0.0.1:8000/upload/' \
@@ -91,17 +94,42 @@ curl -X 'POST' \
 @app.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
     file_name = file.filename
-    work_base_dir = file_name[:-4]
     print(file_name)
     file_location = os.path.join(video_storage_path, file_name)
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    global videorag
-    videorag = VideoRAG(cheap_model_func=gpt_4o_mini_complete,
-                        best_model_func=gpt_4o_mini_complete,
-                        working_dir=work_base_dir)
-    videorag.insert_video(video_path_list=[file_location])
-    return JSONResponse(content={"message": "File uploaded successfully", "filename": file.filename})
+    import subprocess
+    import sys
+    result = subprocess.run([sys.executable, "insert_param.py",file_name], capture_output=True, text=True)  # Linux/macOS
+    # result = subprocess.run(["dir"], capture_output=True, text=True, shell=True)  # Windows
+    print(result.stdout)  # 输出命令结果
+    insert_result = result.stdout
+    return JSONResponse(content={"message": "File uploaded successfully", "insert_result": insert_result})
+
+@app.post("/get_workspapces")
+async def get_workspapces(request: ChatRequest):
+    work_dir = config("WORKING_DIR")
+    print("Will find work_dir from "+work_dir)
+    work_spaces = []
+    files = os.listdir(work_dir)
+    for f in files:
+        if os.path.isdir(f):
+            work_spaces.append({"id":f,"name":f})
+    #return JSONResponse(content={"message": "File uploaded successfully", "work_spaces": work_spaces})
+    return jsonMsg(status="success", data=work_spaces, error="")
+
+
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    print("chat")
+    workspace = str(request.workspace)
+    query = str(request.message)
+    import subprocess
+    import sys
+    result = subprocess.run([sys.executable, "query.py",workspace,query], capture_output=True, text=True)  # Linux/macOS
+    # result = subprocess.run(["dir"], capture_output=True, text=True, shell=True)  # Windows
+    stdout = str(result.stdout)  # 输出命令结果
+    return Response(status="success", data=stdout)
 
 if __name__ == "__main__":
     import uvicorn

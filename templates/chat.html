@@ -293,32 +293,32 @@
             font-size: 200%;
         }
     </style>
-        <script>
-            function uploadFile() {
-                var file = $("#fileInput")[0].files[0];
-                if (!file) {
-                    alert("Please select a file!");
-                    return;
-                }
-                console.log(file);
-                var formData = new FormData();
-                formData.append("file", file);
-    
-                $.ajax({
-                    url: "/upload",
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        $("#status").text("File uploaded successfully: " + response.filename);
-                    },
-                    error: function(xhr) {
-                        $("#status").text("Error: " + xhr.responseText);
-                    }
-                });
+    <script>
+        function uploadFile() {
+            var file = $("#fileInput")[0].files[0];
+            if (!file) {
+                alert("Please select a file!");
+                return;
             }
-        </script>
+            console.log(file);
+            var formData = new FormData();
+            formData.append("file", file);
+
+            $.ajax({
+                url: "/upload",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#status").text("File uploaded successfully: " + response.insert_result);
+                },
+                error: function (xhr) {
+                    $("#status").text("Error: " + xhr.responseText);
+                }
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -353,15 +353,15 @@
             <label for="workspace">Choose Workspace</label>
             <select class="form-control" id='workspace'>
             </select>
-            <label for="query_type">Choose Query Type</label>
+            <!--label for="query_type">Choose Query Type</label>
             <select class="form-control" id='query_type'>
                 <option value="local">local</option>
                 <option value="global">global</option>
                 <option value="hybrid">hybrid</option>
                 <option value="naive">naive</option>
-            </select>
+            </select-->
             <div class="input-container">
-                <input type="text" id="userInput" placeholder="Type your message..." />
+                <input type="text" id="userInput" placeholder="Type your message..." value="Please list all actions in the video along with their timestamps and descriptions." />
                 <button id="sendButton">Send</button>
             </div>
         </div>
@@ -503,7 +503,8 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message, "workspace": $('#workspace').val(), "query_type": $('#query_type').val()}),
+                    //body: JSON.stringify({ message, "workspace": $('#workspace').val(), "query_type": $('#query_type').val() }),
+                    body: JSON.stringify({ message, "workspace": $('#workspace').val(), "query_type":""}),
                 });
 
                 const data = await response.json();
@@ -546,153 +547,38 @@
         userInput.focus();
 
 
-
-
-
-        function upload_file() {
-            var fd = new FormData();
-            fd.append('file', (document.getElementById('file').files[0]));
-            console.log(document.getElementById('file').files[0]);
-            var uploadURL = "/upload"; //Upload URL
-            debugger
+        function init_select_data() {
             $.ajax({
-                url: uploadURL,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                cache: false,
-                data: fd,
-                timeout: 30000,
-                beforeSend: function (xhr, settings) {
-                    //发送前处理
-                },
-                complete: function (xhr, textStatus) {
-                    //通信完成
-                },
-                success: function (result, textStatus, xhr) {
-                    //ajax通讯成功
-                    //alert("解析完成，等待下载!");
-                    //$("#status1").append(textStatus);
-                    //download(result.csvname);
-
-                },
-                error: function (xhr, textStatus, error) {
-                    //ajax通讯失败
-                    //$('#status1').append('发送失败<br>');
-                }
-            });
-
-        }
-
-        $(function () {
-            function sendFileToServer(formData, status) {
-                var uploadURL = "/upload"; //Upload URL
-                $.ajax({
-                    url: uploadURL,
-                    type: "POST",
-                    contentType: false,
-                    processData: false,
-                    cache: false,
-                    data: formData,
-                    timeout: 30000,
-                    beforeSend: function (xhr, settings) {
-                        //发送前处理
-                    },
-                    complete: function (xhr, textStatus) {
-                        //通信完成
-                    },
-                    success: function (result, textStatus, xhr) {
-                        //ajax通讯成功
-                        alert("上传完成!");
-                        init_upload_file_list();
-                    },
-                    error: function (xhr, textStatus, error) {
-                        //ajax通讯失败
-                        $('#status1').append('发送失败<br>');
-                    }
-                });
-            }
-            function handleFileUpload(files, obj) {
-                var fd = new FormData();
-                for (var i = 0; i < files.length; i++) {
-                    fd.append('files', files[i]);
-                }
-                //fd.append('start', $("#start").val());
-                //fd.append('filter', $("#filter").val());
-                //fd.append('end', $("#end").val());
-                sendFileToServer(fd, status);
-            }
-            $(document).ready(function () {
-                var obj = $("#dragdroparea");
-                obj.on('dragenter', function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                obj.on('dragover', function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                obj.on('drop', function (e) {
-                    e.preventDefault();
-                    var files = e.originalEvent.dataTransfer.files;
-                    handleFileUpload(files);
-                });
-                $(document).on('dragenter', function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                $(document).on('dragover', function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                $(document).on('drop', function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                init_upload_file_list();
-            });
-        });
-        function init_upload_file_list() {
-            console.log(11111);
-            $.ajax({
-                url: "/query_docs",
+                url: "/get_workspapces",
                 type: 'POST',
                 cache: false,
                 data: JSON.stringify({
-                    "query": "docQuery",
+                    "workspace": "workspace",
+                    "message":"message",
+                    "query_type":"query_type",
                 }),
                 processData: false,
                 contentType: false,
                 dataType: "json",
                 contentType: "application/json",
                 success: function (content, status) {
-                    console.log(content);
-                    result = content.data;
+                    var result = $.parseJSON(content);
                     var workspace = $('#workspace');
-                    var tableHead = $('#jsonTable thead');
-                    tableHead.children().remove();
-                    var row = $('<tr>');
-                    row.append($('<th>').text("DOC_ID"));
-                    row.append($('<th >').text("WORKSPACE"));
-                    row.append($('<th >').text("DOC_NAME"));
-                    tableHead.append(row);
-                    var tableBody = $('#jsonTable tbody');
-                    tableBody.children().remove();
-                    $.each(result, function (index, object) {
-                        console.log(object);
-                        var row = $('<tr>');
-                        row.append($('<td>').text(object.id));
-                        row.append($('<td>').text(object.workspace));
-                        row.append($('<td>').text(object.doc_name));
-                        tableBody.append(row);
-                        workspace.append($('<option value="'+object.workspace+'">'+object.workspace+'</option>'));
-                    });
-
-                    
-
+                    workspace.children().remove();
+                    if ("success" == result.status) {
+                        datas = result.data;
+                        $.each(datas, function (index1, object) {
+                            workspace.append($('<option value="' + object["id"] + '">' + object["name"] + '</option>'));
+                        });
+                    }
                 }
             });
         }
+        $(function () {
+            $(document).ready(function () {
+                init_select_data();
+            });
+        });
 
     </script>
 </body>

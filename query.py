@@ -45,7 +45,7 @@ if __name__ == '__main__':
     #videorag = VideoRAG(cheap_model_func=oci_cohere_complete, best_model_func=oci_cohere_complete, working_dir=f"./videorag-workdir")
     videorag = VideoRAG(cheap_model_func=gpt_4o_mini_complete,
                         best_model_func=gpt_4o_mini_complete,
-                        working_dir=os.path.join(work_base_dir,str(sys.argv[1])[:-4]))
+                        working_dir=os.path.join(work_base_dir,str(sys.argv[1])))
     videorag.load_caption_model(debug=False)
     for query in querys:
         print(f"start [{query}]"+"**"*50)
