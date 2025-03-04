@@ -113,7 +113,7 @@ async def get_workspapces(request: ChatRequest):
     work_spaces = []
     files = os.listdir(work_dir)
     for f in files:
-        if os.path.isdir(f):
+        if os.path.isdir(os.path.join(work_dir, f)):
             work_spaces.append({"id":f,"name":f})
     #return JSONResponse(content={"message": "File uploaded successfully", "work_spaces": work_spaces})
     return jsonMsg(status="success", data=work_spaces, error="")
