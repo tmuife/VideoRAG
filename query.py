@@ -21,7 +21,7 @@ from videorag import VideoRAG, QueryParam
 if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
 
-    print("start customer data processing ...at "+ datetime.now().strftime("%H:%M:%S"))
+    #print("start customer data processing ...at "+ datetime.now().strftime("%H:%M:%S"))
     #querys = ["Please list all actions in the video along with their timestamps and descriptions."
     #    , "Please identify the individuals in the video and provide their identity information."
     #    , "Please detect specific events occurring in the video and provide their timestamps."
@@ -48,8 +48,8 @@ if __name__ == '__main__':
                         working_dir=os.path.join(work_base_dir,str(sys.argv[1])))
     videorag.load_caption_model(debug=False)
     for query in querys:
-        print(f"start [{query}]"+"**"*50)
+        #print(f"start [{query}]"+"**"*50)
         response = videorag.query(query=query, param=param)
         print(response)
-        print(f"end [{query}]" + "**" * 50)
-    print("end customer data processing ...at " + datetime.now().strftime("%H:%M:%S"))
+        #print(f"end [{query}]" + "**" * 50)
+    #print("end customer data processing ...at " + datetime.now().strftime("%H:%M:%S"))
