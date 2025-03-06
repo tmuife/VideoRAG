@@ -732,7 +732,7 @@ async def videorag_query(
     else:
         sys_prompt_temp = PROMPTS["videorag_response"]
 
-    customer_format = """请按照以下格式生成视频描述：
+    customer_format = """请按照以下格式生成视频描述(按以下模板生成的结果在换行符后面增加一个<br> html标签，使得可以在html中正常显示换行)：
 
 视频描述
 视频展示了一个{环境描述}，{场景特点}。{人物活动描述}。
